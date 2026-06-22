@@ -15,25 +15,32 @@ import { INTERNAL_ERROR_MESSAGE } from "./lib/constants";
 
 const app = new Hono<{ Bindings: Bindings }>();
 
-    app.use(
-        "/api/*",
-        cors({
-            origin: [
-                "http://localhost:5173",
-                "https://invoice.acorp.app",
-                "https://app.acorp.insights",
-                "https://app.acorp.invoice",
-                "https://app.acorp.lumina",
-                "https://app.acorp.opencomms",
-                "https://app.acorp.traqr",
-                "https://app.acorp.zendo",
-            ],
-            allowHeaders: ["X-Custom-Header", "Upgrade-Insecure-Requests", "Content-Type", "Authorization", "Set-Cookie", "X-Mobile-Client"],
-            allowMethods: ["POST", "GET", "OPTIONS", "DELETE", "PATCH", "PUT"],
-            exposeHeaders: ["Content-Length", "X-Kuma-Revision"],
-            credentials: true,
-        }),
-    );
+app.use(
+    "/api/*",
+    cors({
+        origin: [
+            "http://localhost:5173",
+            "https://invoice.acorp.app",
+            "https://app.acorp.insights",
+            "https://app.acorp.invoice",
+            "https://app.acorp.lumina",
+            "https://app.acorp.opencomms",
+            "https://app.acorp.traqr",
+            "https://app.acorp.zendo",
+        ],
+        allowHeaders: [
+            "X-Custom-Header",
+            "Upgrade-Insecure-Requests",
+            "Content-Type",
+            "Authorization",
+            "Set-Cookie",
+            "X-Mobile-Client",
+        ],
+        allowMethods: ["POST", "GET", "OPTIONS", "DELETE", "PATCH", "PUT"],
+        exposeHeaders: ["Content-Length", "X-Kuma-Revision"],
+        credentials: true,
+    }),
+);
 
 app.use("/api/*", rateLimiterMiddleware());
 
