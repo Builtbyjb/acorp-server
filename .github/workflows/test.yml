@@ -1,0 +1,45 @@
+name: Test
+on:
+  pull_request:
+    branches: [main, staging]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build dependencies
+        run: npx turbo build --filter='./packages/**'
+
+  build-apps:
+    runs-on: ubuntu-latest
+    needs: build
+    strategy:
+      fail-fast: false
+      matrix:
+        app: [acorp, insights, invoice, lumina, opencomms, traqr, zendo]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build ${{ matrix.app }}
+        env:
+          VITE_API_URL: http://localhost:5173
+        run: npx turbo build --filter=${{ matrix.app }}

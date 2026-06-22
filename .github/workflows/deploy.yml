@@ -1,0 +1,88 @@
+name: Deploy
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy-backend:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Apply D1 Migrations
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          d1Token: ${{ secrets.CLOUDFLARE_D1_TOKEN }}
+          workingDirectory: "apps/server"
+          packageManager: npm
+          command: d1 migrations apply acorp-invoice --remote --env=production
+
+      - name: Build backend
+        run: npx turbo run build --filter=server
+
+      # Deploy Backend (Cloudflare Worker)
+      - name: Deploy Backend
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: "apps/server"
+          packageManager: npm
+          command: deploy --env=production
+
+  deploy-frontend:
+    needs: deploy-backend
+    runs-on: ubuntu-latest
+    environment: production
+    strategy:
+      matrix:
+        app:
+          - name: home
+            filter: acorp
+          - name: insights
+            filter: insights
+          - name: invoice
+            filter: invoice
+          - name: lumina
+            filter: lumina
+          - name: opencomms
+            filter: opencomms
+          - name: traqr
+            filter: traqr
+          - name: zendo
+            filter: zendo
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build ${{ matrix.app.name }}
+        env:
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+        run: npx turbo run build --filter=${{ matrix.app.filter }}
+
+      - name: Deploy ${{ matrix.app.name }}
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: apps/${{ matrix.app.name }}
+          packageManager: npm
+          command: pages deploy dist --branch=main --project-name=${{ matrix.app.name }}
