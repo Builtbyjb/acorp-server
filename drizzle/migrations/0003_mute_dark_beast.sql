@@ -1,0 +1,1 @@
+ALTER TABLE `invoices` ADD `notified` integer DEFAULT false NOT NULL;
