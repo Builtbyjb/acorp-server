@@ -1,5 +1,5 @@
 {
-  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "server",
   "main": "src/index.ts",
   "compatibility_date": "2026-04-17",
@@ -26,7 +26,7 @@
         {
           "binding": "DB",
           "database_name": "acorp-invoice",
-          "database_id": "18f70db9-95a9-492b-a230-722cc95baa9c",
+          "database_id": "f277e299-38d2-4252-aa3a-24b902823674",
           "migrations_dir": "drizzle/migrations",
         },
       ],
@@ -64,7 +64,7 @@
     "dev": {
       "name": "ihod-server-dev",
       "vars": {
-        "STRIPE_PUBLISHABLE_KEY": "pk_test_..."
+        "STRIPE_PUBLISHABLE_KEY": "pk_test_...",
       },
       "d1_databases": [
         {
