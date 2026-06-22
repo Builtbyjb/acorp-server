@@ -15,7 +15,7 @@ import {
 import { authMiddleware } from "@/middleware/authentication";
 import { zValidator } from "@hono/zod-validator";
 import { getBlobURL, handleZodValidate } from "@/lib/utils";
-import { UserSchema, BusinessSchema, FeedbackSchema } from "@shared/lib/zod-schema";
+import { UserSchema, BusinessSchema, FeedbackSchema } from "@/lib/zod-schema";
 
 const userRouteV1 = new Hono<{ Bindings: Bindings }>().basePath("/user");
 userRouteV1.use("*", authMiddleware());

@@ -2,7 +2,7 @@ import { Hono } from "hono";
 import { Bindings, TokenPayload } from "@/lib/types";
 import { zValidator } from "@hono/zod-validator";
 import { drizzle } from "drizzle-orm/d1";
-import { InvoiceFormSchema } from "@shared/lib/zod-schema";
+import { InvoiceFormSchema } from "@/lib/zod-schema";
 import { planAccessMiddleware } from "@/middleware/plan-access";
 import { authMiddleware } from "@/middleware/authentication";
 import { handleZodValidate } from "@/lib/utils";

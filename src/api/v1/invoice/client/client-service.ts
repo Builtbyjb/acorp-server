@@ -2,7 +2,7 @@ import { DrizzleD1Database } from "drizzle-orm/d1";
 import { eq, and, like, desc } from "drizzle-orm";
 import { clients, invoices } from "@/db/invoice-schema";
 import { members } from "@/db/schemas";
-import { ClientListSchema, ClientSchema } from "@shared/lib/zod-schema";
+import { ClientListSchema, ClientSchema } from "@/lib/zod-schema";
 
 export async function getOrganizationMember(db: DrizzleD1Database, userId: number) {
     return db.select().from(members).where(eq(members.userId, userId));

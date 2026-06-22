@@ -1,7 +1,6 @@
 import type { Context } from "hono";
 import { ErrorResult, type TokenPayload } from "./types";
-import type { InvoiceNumber } from "@shared/lib/types";
-import { getCurrentYear } from "@shared/utils/util";
+import type { InvoiceNumber, InvoiceItem } from "@/lib/types";
 import { getCookie } from "hono/cookie";
 import { verify, sign } from "hono/jwt";
 import { otpTemplate } from "@/templates/util";
@@ -13,7 +12,7 @@ export function getTokenFromCookieOrHeader(c: Context, tokenName: string): strin
     if (authHeader?.startsWith(AUTH_HEADER_PREFIX)) {
         return authHeader.slice(AUTH_HEADER_PREFIX.length);
     }
-    return getCookie(c, tokenName);
+    return getCookie(c, tokenName) || null;
 }
 
 export function generateOTP(): string {
@@ -106,4 +105,27 @@ export function handleZodValidate(result: any, c: Context) {
 
 export function fillTemplate(template: string, variables: Record<string, string>): string {
     return Object.entries(variables).reduce((html, [key, value]) => html.replaceAll(`{{${key}}}`, value), template);
+}
+
+export function getCurrentYear(): number {
+    return new Date().getFullYear();
+}
+
+export function calculateTotalAmount(items: InvoiceItem[], taxRate: number, discount: number): number {
+    const subtotal = calculateSubTotal(items);
+    const taxAmount = calculateTaxAmount(subtotal, taxRate);
+    const discountAmount = calculateDiscount(subtotal, discount);
+    return subtotal + taxAmount - discountAmount;
+}
+
+export function calculateTaxAmount(subtotal: number, taxRate: number): number {
+    return subtotal * (taxRate / 100);
+}
+
+export function calculateDiscount(subtotal: number, discount: number): number {
+    return subtotal * (discount / 100);
+}
+
+export function calculateSubTotal(items: InvoiceItem[]): number {
+    return items.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0);
 }

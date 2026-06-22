@@ -2,7 +2,7 @@ import { Hono } from "hono";
 import { Bindings, TokenPayload } from "@/lib/types";
 import { zValidator } from "@hono/zod-validator";
 import { drizzle } from "drizzle-orm/d1";
-import { ClientFormSchema } from "@shared/lib/zod-schema";
+import { ClientFormSchema } from "@/lib/zod-schema";
 import { authMiddleware } from "@/middleware/authentication";
 import { handleZodValidate } from "@/lib/utils";
 import {
